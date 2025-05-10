@@ -15,9 +15,40 @@ class Human(pygame.Rect):
 
 
 
+    def grav(self):
+        if self.collidepoint(maps) == -1:
+            self.y =+ self.grav_power
+
+    
+    def move(self,winodw):
+        self.grav()
+        window.blit(self.image,(self.x,self.y))
+        event = pygame.key.get_pressed()
+        if event[pygame.K_d]:
+            if self.x > 200:
+                for brick in maps:
+                    brick.x -= self.step
+            else:
+                self.x =+ self.step
+        if event[pygame.K_a]:
+            if self.x > 200:
+                for brick in maps:
+                    brick.x -+ self.step
+            else:
+                self.x -= self.step
+
+        def jump(self):
+            
+
+
+
+
+
+
+
     def move_image(self):
         if self.image_count == len(self.image_list * 10) - 1:
-            self.image_count = 0
+            self.image_count =0
         if self.image_count %10 == 0:
             self.image = self.image_list[self.image_count // 50]
         self.image_count += 1
@@ -30,20 +61,19 @@ class Hero(Human):
         self.hp = hp
         self.start_x = self.x
         self.start_y = self.y
-        
 
     def move(self, window):
         if self.walk["down"] and self.y < size_window[0]:
             self.y += self.step
             if self.collidelist(wall_list) != -1:
-                self.y += self.step
+                self.y -= self.step
             self.side = False
 
 
         if self.walk["up"] and self.y < size_window[0]:
             self.y -= self.step
             if self.collidelist(wall_list) != -1:
-                self.y -= self.step
+                self.y += self.step
             self.side = False
 
 
@@ -70,9 +100,24 @@ class Hero(Human):
             self.image_now = pygame.transform.flip(self.image, True , False)
         else:
             self.image_now = self.image
-
+   
         self.move_image()
         window.blit(self.image_now, (self.x,self.y))
+    
+
+
+
+    #JUMP
+
+
+
+
+
+    def jump(self,window):
+        pass
+
+
+
 
     def collide_enemy(self, list_obj):
         if self.collidelist(list_obj) != -1:
@@ -192,19 +237,10 @@ class Buff(pygame.Rect):
     def completing(self,hero,bot_list):
         if self.designed == "HP":
             hero.hp += 1
-        elif self.designed == "move_p":
-            hero.move_speed += 2
+        elif self.designed == "move_speed":
+            hero.step += 2
             self.time_start = pygame.time.get_ticks()
-        elif self.designed == "immortal":
-            hero.immortal = True
-            self.time_start = pygame.time.get_ticks()
-        elif self.designed == "freezing":
-            for bot in bot_list:
-                bot.freezing = True
-                bot.step = 0
-                bot.can_shoot = False
-        self.y = size_window[1] +100
-        self.step = 0
+
 
     def work_time(self,end_time,hero):
         if end_time - self.time._start > self.working_time:
