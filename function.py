@@ -19,7 +19,7 @@ class Human(pygame.Rect):
         if self.image_count == len(self.image_list * 10) - 1:
             self.image_count = 0
         if self.image_count %10 == 0:
-            self.image = self.image_list[self.image_count // 10]
+            self.image = self.image_list[self.image_count // 50]
         self.image_count += 1
 
 class Hero(Human):
@@ -33,11 +33,27 @@ class Hero(Human):
         
 
     def move(self, window):
+        if self.walk["down"] and self.y < size_window[0]:
+            self.y += self.step
+            if self.collidelist(wall_list) != -1:
+                self.y += self.step
+            self.side = False
+
+
+        if self.walk["up"] and self.y < size_window[0]:
+            self.y -= self.step
+            if self.collidelist(wall_list) != -1:
+                self.y -= self.step
+            self.side = False
+
+
         if self.walk["left"] and self.x > 0:
             self.x -= self.step
             if self.collidelist(wall_list) != -1:
                 self.x += self.step
             self.side = True
+
+
         if self.walk["right"] and self.x < size_window[0]:
             self.x += self.step
             if self.collidelist(wall_list) != -1:
@@ -70,6 +86,12 @@ class Hero(Human):
         if index != -1:
             heart_list.pop(index)
             self.hp += 1
+
+
+
+    #def change_race(self,hp,image_list):
+    #    if self.hp =<3:
+    #            self.image = 
 
 
 
@@ -145,6 +167,76 @@ class Bullet(pygame.Rect):
         if self.colliderect(hero):
             hero.hp =- 1
             bullet_image_list.remove(self)
+
+
+
+class Buff(pygame.Rect):
+
+    buff_list = list()
+
+    def __init__(self,x,y,width,height,image,designed,step,working_time):
+        super().__init__(x,y,width,height)
+        self.image = image
+        self.designed = designed
+        self.step = step
+        self.time_start = 0
+        self.working_time = working_time
+        self.active = False
+
+    def move(self,window):
+        if not self.active:
+            self.y += self.step
+            window.blit(self.image, (self.x, self.y))
+
+
+    def completing(self,hero,bot_list):
+        if self.designed == "HP":
+            hero.hp += 1
+        elif self.designed == "move_p":
+            hero.move_speed += 2
+            self.time_start = pygame.time.get_ticks()
+        elif self.designed == "immortal":
+            hero.immortal = True
+            self.time_start = pygame.time.get_ticks()
+        elif self.designed == "freezing":
+            for bot in bot_list:
+                bot.freezing = True
+                bot.step = 0
+                bot.can_shoot = False
+        self.y = size_window[1] +100
+        self.step = 0
+
+    def work_time(self,end_time,hero):
+        if end_time - self.time._start > self.working_time:
+            if self.designed == "speed_bullet":
+                hero.speed_bullet /=2
+            elif self.designed == "speed_shoot":
+                hero.shoot_limit *=2
+            elif self.designed == "immortal":
+                hero.immortal = False
+            print(self)
+            Buff.buff_list.remove(self)
+
+
+
+
+    def collide(self,hero, bot_list):
+        if self.colliderect(hero) and not self.active:
+            self.active = True
+            self.completing(hero, bot_list)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 class Heart(pygame.Rect):
