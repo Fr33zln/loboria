@@ -14,7 +14,7 @@ hero = Hero(
     size_hero[1],
     hero_image_list,
     1,
-    2
+    2,
 )
 
 bot1 = Bot(
@@ -53,7 +53,7 @@ bullet4= Bullet(bot4.x+17,
 
 
 
-heart_list.append(Heart(290,255,50, 50, heart_image_list))
+#heart_list.append(Heart(290,255,50, 50, heart_image_list))
 heart_list.append(Heart(390,80,50, 50, heart_image_list))
 well_list.append(Well(700,10,50, 50, well_image_list))
 
