@@ -8,6 +8,7 @@ pygame.init()
 size_window = (995,500)
 size_hero = (60,45)
 size_bot = (50,50)
+brick_size = (15,15)
 # 
 
 
@@ -47,14 +48,14 @@ bot3_image_list = [
 bullet_image_list =pygame.transform.scale(pygame.image.load(os.path.join(abs_path, "Images", "easy.png")), size_hero)
 well_image_list =pygame.transform.scale(pygame.image.load(os.path.join(abs_path, "Images", "easy.png")), size_hero)
 heart_image_list =pygame.transform.scale(pygame.image.load(os.path.join(abs_path, "Images", "easy.png")), size_hero)
-
-
+bullet_image_list =pygame.transform.scale(pygame.image.load(os.path.join(abs_path, "Images", "easy.png")), size_hero)
+brick_img = pygame.transform.scale(pygame.image.load(os.path.join(abs_path, "Images", "easy.png")), size_hero)
 
 
 
 
 #66 #33 
-maps = {
+temp_map = {
     "LVL1":{
         "map":[
             "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
