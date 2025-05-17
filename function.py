@@ -5,42 +5,131 @@ from data import *
 
 
 class Human(pygame.Rect):
-    def __init__(self, x, y, width, height, image_list, step):
+    def __init__(self, x, y, width, height, image):
         super().__init__(x, y, width, height)
-        self.image_list = image_list
-        self.image = self.image_list
-        self.image_now = self.image
-        self.image_count = 0
-        self.step = step
+        self.image_list = image
+        self.image = self.image_list[0]
+        self.cords = 0
+        self.step = 2
+        self.grav_power = 2
+        self.static_gravity = -2
+        self.jump = -1
+        self.jump_power = 12
+        self.can_jump = False
 
 
 
     def grav(self):
-        if self.collidepoint(maps) == -1:
+        if self.collidepoint(temp_map) == -1:
             self.y =+ self.grav_power
+            self.grav_power -= 0.01
+        else:
+            self.grav_power = self.static_gravity
+            self.can_jump = True
 
-    
-    def move(self,winodw):
+
+
+
+
+
+    def move(self,window):
         self.grav()
         window.blit(self.image,(self.x,self.y))
         event = pygame.key.get_pressed()
         if event[pygame.K_d]:
+            height = round(temp_map[0].height *0,2)
             if self.x > 200:
-                for brick in maps:
+                for i in range(0, len(temp_map)):
+                    if self.collidepoint(temp_map[i].x - self.step, temp_map[i].y + height) or self.collidepoint(temp_map[i].x - self.step, temp_map)
+                        break
+                else:
+                    for brick in temp_map:
+                        brick.x -= self.step
+            else:
+                for i in range(0, len(temp_map)):
+                    if self.collidepoint(temp_map[i].x - self.step, temp_map[i].y + height) or self.collidepoint(temp_map[i].x - self.step, temp_map)
+                        break
+                else:
+                    self.x += self.step
+
+
+
+        if event[pygame.K_d]:
+            height = round(temp_map[0].height *0,2)
+            if self.x - temp_map[0].x > 200:
+                for i in range(0, len(temp_map)):
+                    if self.collidepoint(temp_map[i].x + self.step, temp_map[i].y + height) or self.collidepoint(temp_map[i].x - self.step, temp_map)
+                        break
+                else:
+                    for brick in temp_map:
+                        brick.x += self.step
+            else:
+                for i in range(0, len(temp_map)):
+                    if self.collidepoint(temp_map[i].x + self.step, temp_map[i].y + height) or self.collidepoint(temp_map[i].x - self.step, temp_map)
+                        break
+                else:
+                    self.x -= self.step
+
+
+
+
+
+
+
+
+
+
+    def move(self,window):
+        self.grav()
+        window.blit(self.image,(self.x,self.y))
+        event = pygame.key.get_pressed()
+        if event[pygame.K_d]:
+            if self.x - temp_map[0].x > 200:
+                for brick in temp_map:
                     brick.x -= self.step
             else:
-                self.x =+ self.step
+                self.x += self.step
         if event[pygame.K_a]:
-            if self.x > 200:
-                for brick in maps:
-                    brick.x -+ self.step
+            if self.x - temp_map[0].x > 200:
+                for brick in temp_map:
+                    brick.x += self.step
             else:
                 self.x -= self.step
 
-        def jump(self):
+    def jump(self):
+        if self.jump != 1:
+            self.y -= self.jump
+            self.jump -= 1
+
+    def collide_enemy(self, list_obj):
+        if self.collidelist(list_obj) != -1:
+            self.x = self.start_x
+            self.y = self.start_y
+            self.hp -= 1
+
+
+    def collide_heart(self, heart_list):
+        index = self.collidelist(heart_list)
+        if index != -1:
+            heart_list.pop(index)
+            self.hp += 1
             
 
+class Maps(pygame.Rect):
+    def __init__(self,x,y,width,height,image):
+        super().__init__(x,y,width,height)
+        self.image = image
 
+def make_map(new_map):
+    x,y = 0,0
+    width, height = brick_size
+    for line in new_map:
+        for elem in line:
+            if elem == "1":
+                wall_list.append(Wall(x,y,width,height,brick_img))
+            x += width
+        x = 0
+        y += height
 
 
 
@@ -113,24 +202,11 @@ class Hero(Human):
 
 
 
-    def jump(self,window):
-        pass
 
 
 
 
-    def collide_enemy(self, list_obj):
-        if self.collidelist(list_obj) != -1:
-            self.x = self.start_x
-            self.y = self.start_y
-            self.hp -= 1
-
-
-    def collide_heart(self, heart_list):
-        index = self.collidelist(heart_list)
-        if index != -1:
-            heart_list.pop(index)
-            self.hp += 1
+    
 
 
 
@@ -306,19 +382,10 @@ class Wall(pygame.Rect):
         super().__init__(x, y, width, height)
         self.color = color
 
-def create_wall(new_map):
-    x,y = 0,0
-    width,height = 15,15
-    for line in new_map:
-        for elem in line:
-            if elem == "1":
-                wall_list.append(Wall(x,y,width,height,WHITE))
-            x += width
-        x = 0
-        y += height
+
 
 
 
         
 
-create_wall(maps["LVL1"]["map"])
+make_map(temp_map["LVL1"]["map"])
