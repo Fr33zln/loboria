@@ -71,32 +71,7 @@ class Human(pygame.Rect):
                     self.x -= self.step
 
 
-
-
-
-
-
-
-
-
-    def move(self,window):
-        self.grav()
-        window.blit(self.image,(self.x,self.y))
-        event = pygame.key.get_pressed()
-        if event[pygame.K_d]:
-            if self.x - temp_map[0].x > 200:
-                for brick in temp_map:
-                    brick.x -= self.step
-            else:
-                self.x += self.step
-        if event[pygame.K_a]:
-            if self.x - temp_map[0].x > 200:
-                for brick in temp_map:
-                    brick.x += self.step
-            else:
-                self.x -= self.step
-
-    def jump(self):
+    def jumps(self):
         if self.jump != 1:
             self.y -= self.jump
             self.jump -= 1
@@ -382,6 +357,13 @@ class Wall(pygame.Rect):
         super().__init__(x, y, width, height)
         self.color = color
 
+
+
+
+
+        
+
+make_map(temp_map["LVL1"]["map"])
 
 
 
