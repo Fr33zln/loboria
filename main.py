@@ -7,14 +7,12 @@ pygame.display.set_caption("Loboria")
 clock = pygame.time.Clock()
 
 
-hero = Hero(
+hero = Human(
     10,
     10,
     size_hero[0],
     size_hero[1],
-    hero_image_list,
-    1,
-    2,
+    hero_image_list
 )
 
 bot1 = Bot(
@@ -147,7 +145,7 @@ while game:
 #        pygame.draw.line(window, WHITE, (x, 0), (x, size_window[1]))
 #        x += 10
 #        y += 10
-
+        hero.jumps()
         hero.move(window)
         bot1.guardian(window)
         bot4.striker(window, bullet4)
@@ -168,31 +166,21 @@ while game:
             pygame.draw.rect(window, wall.color, wall)
             #print(wall.x,wall.y)
 
-
+        for brick in temp_map:
+            window.blit(brick.image,(brick.x,brick.y))
 
 
 
         for event in events:
-            if event.type == pygame.QUIT:
-                game = False
+
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_w:
-                    hero.walk["up"] = True
-                if event.key == pygame.K_a:
-                    hero.walk["left"] = True
-                if event.key == pygame.K_s:
-                    hero.walk["down"] = True
-                if event.key == pygame.K_d:
-                    hero.walk["right"] = True
+                if event.key == pygame.K_SPACE and hero.can_jump:
+                    hero.jump = hero.jump_power
+                    hero.can_jump = False
             if event.type == pygame.KEYUP:
-                if event.key == pygame.K_w:
-                    hero.walk["up"] = False
-                if event.key == pygame.K_a:
-                    hero.walk["left"] = False
-                if event.key == pygame.K_s:
-                    hero.walk["down"] = False
-                if event.key== pygame.K_d:
-                    hero.walk["right"] = False
+                if event.type == pygame.K_SPACE:
+                    pass
+
 
 
     for event in events:
@@ -200,3 +188,5 @@ while game:
                 game = False
     clock.tick(FPS)
     pygame.display.flip()
+
+run()
