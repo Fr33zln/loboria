@@ -23,12 +23,11 @@ heart_list = list()
 abs_path = os.path.abspath(__file__ +"/..")
 hero_image_list = [
         pygame.transform.scale(pygame.image.load(os.path.join(abs_path, "Images", "easy.png")), size_hero),
-    pygame.transform.scale(pygame.image.load(os.path.join(abs_path, "Images", "easy_side.png")), size_hero),
-    pygame.transform.scale(pygame.image.load(os.path.join(abs_path, "Images", "easy_side.png")), size_hero),
+    pygame.transform.scale(pygame.image.load(os.path.join(abs_path, "Images", "easy.png")), size_hero),
 ]   
 racism_image_list = [
 pygame.transform.scale(pygame.image.load(os.path.join(abs_path, "Images", "green.png")), size_hero),
-    pygame.transform.scale(pygame.image.load(os.path.join(abs_path, "Images", "green_side.png")), size_hero)
+pygame.transform.scale(pygame.image.load(os.path.join(abs_path, "Images", "green.png")), size_hero)
 ]
 bot1_image_list = [
     pygame.transform.scale(pygame.image.load(os.path.join(abs_path, "Images", "easy.png")), size_bot),
@@ -45,7 +44,6 @@ bot3_image_list = [
     pygame.transform.scale(pygame.image.load(os.path.join(abs_path, "Images", "easy.png")), size_hero),
    pygame.transform.scale(pygame.image.load(os.path.join(abs_path, "Images", "easy.png")), size_hero),
 ]
-bullet_image_list =pygame.transform.scale(pygame.image.load(os.path.join(abs_path, "Images", "easy.png")), size_hero)
 well_image_list =pygame.transform.scale(pygame.image.load(os.path.join(abs_path, "Images", "easy.png")), size_hero)
 heart_image_list =pygame.transform.scale(pygame.image.load(os.path.join(abs_path, "Images", "easy.png")), size_hero)
 bullet_image_list =pygame.transform.scale(pygame.image.load(os.path.join(abs_path, "Images", "easy.png")), size_hero)
