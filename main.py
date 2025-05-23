@@ -7,36 +7,39 @@ pygame.display.set_caption("Loboria")
 clock = pygame.time.Clock()
 
 
-hero = Human(
-    10,
-    10,
-    size_hero[0],
-    size_hero[1],
-    hero_image_list
+hero = Hero(
+    x=10,
+    y=10,
+    width=size_hero[0],
+    height=size_hero[1],
+    image_list=hero_image_list,
+    step=2,
+    hp=3
 )
+
+
 
 bot1 = Bot(
     100,
     335,
-    size_hero[0],
-    size_hero[1],
+    size_bot[0], # Use size_bot for bots
+    size_bot[1],
     bot1_image_list,
     1,
     "vertical",
-    radius = 105,
+    radius=105,
 )
 
 
-
 bot4 = Bot(
-    100,
+    900, 
     10,
-    size_hero[0],
-    size_hero[1],
+    size_bot[0], 
+    size_bot[1],
     bot3_image_list,
     2,
     "vertical",
-    radius = 120,
+    radius=120,
 )
 bullet4= Bullet(bot4.x+17,
                  bot4.y,
@@ -53,7 +56,6 @@ bullet4= Bullet(bot4.x+17,
 
 #heart_list.append(Heart(290,255,50, 50, heart_image_list))
 heart_list.append(Heart(390,80,50, 50, heart_image_list))
-well_list.append(Well(700,10,50, 50, well_image_list))
 
 font = pygame.font.Font(None, 40)
 what_window = "menu"
@@ -145,7 +147,8 @@ while game:
 #        pygame.draw.line(window, WHITE, (x, 0), (x, size_window[1]))
 #        x += 10
 #        y += 10
-        hero.jumps()
+        hero.grav(wall_list)
+        hero.jump()
         hero.move(window)
         bot1.guardian(window)
         bot4.striker(window, bullet4)
@@ -159,15 +162,8 @@ while game:
         for heart in heart_list:
             heart.blit(window)
 
-        for well in well_list:
-            well.blit(window)
-
-        for wall in wall_list:
-            pygame.draw.rect(window, wall.color, wall)
-            #print(wall.x,wall.y)
-
-        for brick in temp_map:
-            window.blit(brick.image,(brick.x,brick.y))
+        for wall_obj in wall_list:
+            window.blit(wall_obj.image, (wall_obj.x, wall_obj.y))
 
 
 
@@ -175,8 +171,7 @@ while game:
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE and hero.can_jump:
-                    hero.jump = hero.jump_power
-                    hero.can_jump = False
+                    hero.jump()
             if event.type == pygame.KEYUP:
                 if event.type == pygame.K_SPACE:
                     pass
@@ -189,4 +184,4 @@ while game:
     clock.tick(FPS)
     pygame.display.flip()
 
-run()
+
