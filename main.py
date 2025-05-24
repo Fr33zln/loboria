@@ -13,7 +13,7 @@ hero = Hero(
     width=size_hero[0],
     height=size_hero[1],
     image_list=hero_image_list,
-    step=2,
+    step=5,
     hp=3
 )
 
@@ -148,7 +148,7 @@ while game:
 #        x += 10
 #        y += 10
         hero.grav(wall_list)
-        hero.jump()
+
         hero.move(window)
         bot1.guardian(window)
         bot4.striker(window, bullet4)
@@ -172,11 +172,24 @@ while game:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE and hero.can_jump:
                     hero.jump()
+
+                if event.key == pygame.K_d:
+                    hero.walk["right"] = True
+                    
+          
+                if event.key == pygame.K_a:
+                    hero.walk["left"] = True
+
+
+
             if event.type == pygame.KEYUP:
                 if event.type == pygame.K_SPACE:
                     pass
-
-
+                if event.key == pygame.K_d:
+                    hero.walk["right"] = False
+                if event.key == pygame.K_a:
+                    
+                    hero.walk["left"] = False
 
     for event in events:
             if event.type == pygame.QUIT:
@@ -184,4 +197,19 @@ while game:
     clock.tick(FPS)
     pygame.display.flip()
 
-
+#for event in events:
+#        if event.type == pygame.QUIT:
+#            game = False
+#        if event.type == pygame.KEYDOWN:
+#            if event.key == pygame.K_a:
+#                hero.walk["left"] = True
+#            if event.key == pygame.K_d:
+#                hero.walk["right"] = True
+#            if event.key == pygame.K_SPACE:
+#                bullet_list_hero.append(Bullet(hero.centerx - 5,hero.y, 10, 20, RED, -5, image=None))
+#                hero.can_shoot = False
+#        if event.type == pygame.KEYUP:
+#            if event.key == pygame.K_a:
+#                hero.walk["left"] = False
+#            if event.key == pygame.K_d:
+#                hero.walk["right"] = False
