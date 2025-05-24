@@ -30,7 +30,7 @@ class Human(pygame.Rect):
         self.step = step 
         self.grav_power = 2 
         self.static_gravity = -2 
-        self.jump_power = 12
+        self.jump_power = 25
         self.can_jump = False
         self.gravity_speed = 0 
         self.hp = hp 
@@ -58,20 +58,61 @@ class Human(pygame.Rect):
             elif self.colliderect(wall) and self.gravity_speed < 0: 
                 self.y = wall.bottom
                 self.gravity_speed = 0
-
-
-
-
-
-
-
-
+#
+#def move(self,window):
+#    self.grav()
+#    window.blit(self.image,(self.x,self.y))
+#    event = pygame.key.get_pressed()
+#
+#
+#    if event(pygame.k_D):
+#        height = round(temp_map[0].height * 0.2)
+#        for i in range(0, len(temp_map)):
+#            #COLLIDE
+#            if self.collidepoint(temp_map[i].x - self.step, temp_map[i].y + height) or self.collidepoint(temp_map[i].x - self.step, temp_map[i].right + self.step,temp_map[i].bottom-height):
+#                print(0)
+#                return 0
+#        if self.x > 200:
+#            for i in range(0, len(temp_map)):
+#                if temp_map[i].x_real >- length_map and temp_map[i].x <- size_window[0]:
+#                    self.x += self.step
+#                    break
+#            else:
+#                for brick in temp_map:
+#                    brick.x -= self.step
+#        else:
+#            self.x += self.step
+#
+#
+#?    if event(pygame.k_a) and self.x > 0:
+#?        height = round(temp_map[0].height * 0.2)
+#?        for i in range(0, len(temp_map)):
+#?            #COLLIDE
+#?            if self.collidepoint(temp_map[i].right + self.step, temp_map[i].y + height) or self.collidepoint(temp_map[i].right + self.step, temp_map[i].right + self.step,temp_map[i].bottom-height):
+#?                break
+#?        if self.x - temp_map[0] > 200:
+#?            for i in range(0, len(temp_map)):
+#?                if self.collidepoint(temp_map[i].right + self.step, temp_map[i].y + height) or self.collidepoint(temp_map[i].right + self.step, temp_map[i].right + self.step,temp_map[i].bottom-height):
+#?                    break
+#?            else:
+#?                for brick in temp_map:
+#?                    brick.x += self.step
+#?        else:
+#?            self.x -= self.step
+#?
+#?    
+#?
+#?
+#?
+#?
+#?
+#?
     def move(self,window):
         self.grav()
         window.blit(self.image,(self.x,self.y))
         event = pygame.key.get_pressed()
         if event[pygame.K_d]:
-            height = round(temp_map[0].height *0,2)
+            height = round(temp_map[0].height *0,1)
             if self.x > 200:
                 for i in range(0, len(temp_map)):
                     if self.collidepoint(temp_map[i].x - self.step, temp_map[i].y + height) or self.collidepoint(temp_map[i].x - self.step, temp_map):
@@ -166,7 +207,7 @@ def make_map(new_map):
 class Hero(Human):
     def __init__(self,x,y,width,height,image_list,step,hp):
         super().__init__(x,y,width,height,image_list,step,hp)
-        self.walk = {"up": False, "down": False, "left":False,"right":False}
+        self.walk = {"left":False,"right":False}
         self.side = False
         self.start_x = self.x
         self.start_y = self.y
