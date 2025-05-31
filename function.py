@@ -1,24 +1,5 @@
+#FUNCTION
 from data import *
-
-
-
-
-
-#class Human(pygame.Rect):
-#    def __init__(self, x, y, width, height, image):
-#        super().__init__(x, y, width, height)
-#        self.image_list = image
-#        self.image = self.image_list[0]
-#        self.cords = 0
-#        self.step = 2
-#        self.grav_power = 2
-#        self.static_gravity = -2
-#        self.jump = -1
-#        self.jump_power = 12
-#        self.can_jump = False
-#        self.gravity_speed = 0
-
-
 
 
 class Human(pygame.Rect):
@@ -38,75 +19,37 @@ class Human(pygame.Rect):
 
 
 
-    def grav(self,wall_list):
+    def grav(self, wall_list, bot_list): 
         self.gravity_speed += 1
         self.y += self.gravity_speed
 
+        # Collision with walls
         for wall in wall_list:
-            if self.colliderect(wall) and self.gravity_speed >= 0:
-                self.y = wall.top - self.height 
-                self.gravity_speed = 0
-                self.can_jump = True
-                break
+            if self.colliderect(wall):
+                if self.gravity_speed >= 0:
+                    self.y = wall.top - self.height
+                    self.gravity_speed = 0
+                    self.can_jump = True
+                elif self.gravity_speed < 0: 
+                    self.y = wall.bottom
+                    self.gravity_speed = 0
+                break 
 
-        for wall in wall_list: 
-            if self.colliderect(wall) and self.gravity_speed >= 0:
-                self.y = wall.top - self.height
-                self.gravity_speed = 0
-                self.can_jump = True
-                break
-            elif self.colliderect(wall) and self.gravity_speed < 0: 
-                self.y = wall.bottom
-                self.gravity_speed = 0
-#
-#def move(self,window):
-#    self.grav()
-#    window.blit(self.image,(self.x,self.y))
-#    event = pygame.key.get_pressed()
-#
-#
-#    if event(pygame.k_D):
-#        height = round(temp_map[0].height * 0.2)
-#        for i in range(0, len(temp_map)):
-#            #COLLIDE
-#            if self.collidepoint(temp_map[i].x - self.step, temp_map[i].y + height) or self.collidepoint(temp_map[i].x - self.step, temp_map[i].right + self.step,temp_map[i].bottom-height):
-#                print(0)
-#                return 0
-#        if self.x > 200:
-#            for i in range(0, len(temp_map)):
-#                if temp_map[i].x_real >- length_map and temp_map[i].x <- size_window[0]:
-#                    self.x += self.step
-#                    break
-#            else:
-#                for brick in temp_map:
-#                    brick.x -= self.step
-#        else:
-#            self.x += self.step
-#
-#
-#?    if event(pygame.k_a) and self.x > 0:
-#?        height = round(temp_map[0].height * 0.2)
-#?        for i in range(0, len(temp_map)):
-#?            #COLLIDE
-#?            if self.collidepoint(temp_map[i].right + self.step, temp_map[i].y + height) or self.collidepoint(temp_map[i].right + self.step, temp_map[i].right + self.step,temp_map[i].bottom-height):
-#?                break
-#?        if self.x - temp_map[0] > 200:
-#?            for i in range(0, len(temp_map)):
-#?                if self.collidepoint(temp_map[i].right + self.step, temp_map[i].y + height) or self.collidepoint(temp_map[i].right + self.step, temp_map[i].right + self.step,temp_map[i].bottom-height):
-#?                    break
-#?            else:
-#?                for brick in temp_map:
-#?                    brick.x += self.step
-#?        else:
-#?            self.x -= self.step
-#?
-#?    
-#?
-#?
-#?
-#?
-#?
-#?
+    
+        for bot in bot_list: 
+            if self.colliderect(bot):
+
+                if self.gravity_speed >= 0 and self.bottom <= bot.centery + self.height/4: 
+                    self.y = bot.top - self.height 
+                    self.gravity_speed = -self.jump_power // 2
+                    self.can_jump = True 
+                    return bot 
+                else:
+
+                    pass 
+
+        return None 
+
     def move(self,window):
         self.grav()
         window.blit(self.image,(self.x,self.y))
@@ -193,10 +136,15 @@ def make_map(new_map):
     for line in new_map:
         for elem in line:
             if elem == "1":
-                wall_list.append(Wall(x,y,width,height,brick_img)) 
+                wall_list.append(Wall(x,y,width,height,brick_img))
+            elif elem == "2":
+                wall_list.append(Wall(x,y,width,height,grass_img))
+            elif elem == "3":
+                wall_list.append(Wall(x,y,width,height,dirt_img))               
             x += width
         x = 0
         y += height
+
 
 
 
@@ -213,23 +161,44 @@ class Hero(Human):
         self.start_y = self.y
         self.gravity_speed = 0
 
-    def move(self, window):
+    def move(self, window, wall_list, camera_offset_x, camera_offset_y, bot_list):
+        # Pass both wall_list and bot_list to the grav method
+        stomped_bot = self.grav(wall_list, bot_list)
+
+        moving_horizontally = False
         if self.walk["left"]:
             self.x -= self.step
-            self.side = True
+            self.side = False
+            moving_horizontally = True
             if self.collidelist(wall_list) != -1:
                 self.x += self.step
 
         if self.walk["right"]:
             self.x += self.step
-            self.side = False
+            self.side = True
+            moving_horizontally = True
+
             if self.collidelist(wall_list) != -1:
                 self.x -= self.step
 
 
+        screen_center_x = size_window[0] // 2
 
-        moved = any(self.walk.values())
-        if moved:
+
+        if self.x - camera_offset_x > screen_center_x + 100: # Move camera right
+            camera_offset_x += (self.x - camera_offset_x) - (screen_center_x + 100)
+        elif self.x - camera_offset_x < screen_center_x - 100: # Move camera left
+            camera_offset_x += (self.x - camera_offset_x) - (screen_center_x - 100)
+
+
+        screen_center_y = size_window[1] // 2
+        if self.y - camera_offset_y > screen_center_y + 50:
+            camera_offset_y += (self.y - camera_offset_y) - (screen_center_y + 50)
+        elif self.y - camera_offset_y < screen_center_y - 50:
+            camera_offset_y += (self.y - camera_offset_y) - (screen_center_y - 50)
+
+
+        if moving_horizontally:
             self.move_image()
         else:
             self.image = self.image_list[0]
@@ -238,44 +207,48 @@ class Hero(Human):
         if self.side:
             image_to_blit = pygame.transform.flip(self.image, True, False)
 
-        window.blit(image_to_blit, (self.x, self.y))
+        window.blit(image_to_blit, (self.x - camera_offset_x, self.y - camera_offset_y))
 
-
+        return camera_offset_x, camera_offset_y, stomped_bot 
 
                 
 
+    def collide_enemy(self, bot_list): 
+        stomped_bot = None
+        for bot in bot_list:
+            if self.colliderect(bot):
+                if self.gravity_speed >= 0 and self.bottom <= bot.centery + self.height/4:
+                    stomped_bot = bot
+                    break 
+                else:
+               
+                    self.x = self.start_x
+                    self.y = self.start_y
+                    if hasattr(self, 'hp'):
+                        self.hp -= 1
+                    return None 
 
+        return stomped_bot 
 
 
 class Bot(Human):
-    def __init__(self,x,y,width,height,image_list,step,orientation, radius = 0):
-        super().__init__(x,y,width,height,image_list,step)
-        self.orientation = orientation
-        self.start_x = x
-        self.start_y = y
-        self.radius = radius
-        if self.orientation.find("left") != 1:
-            index = 0
-            while index <len(self.image_list):
-                self.image_list[index] = pygame.transform.flip(self.image_list[index],True, False)
-                index +=1         
-     
-
-
     def __init__(self, x, y, width, height, image_list, step, orientation, radius=0):
         super().__init__(x, y, width, height, image_list, step)
         self.orientation = orientation
         self.start_x = x
         self.start_y = y
         self.radius = radius
-        # Flip images if orientation indicates facing left initially
-        if "left" in self.orientation: # Changed from find("left") != 1
+       
+        if "left" in self.orientation: 
             for i in range(len(self.image_list)):
                 self.image_list[i] = pygame.transform.flip(self.image_list[i], True, False)
 
 
-    def guardian(self, window):
-        self.move_image() 
+
+
+
+    def guardian(self, window, camera_offset_x, camera_offset_y): 
+        self.move_image()
         if self.orientation == "vertical":
             self.y += self.step
             if self.y < self.start_y - self.radius or self.y > self.start_y + self.radius:
@@ -284,21 +257,35 @@ class Bot(Human):
             self.x += self.step
             if self.x < self.start_x - self.radius or self.x > self.start_x + self.radius:
                 self.step *= -1
-        window.blit(self.image, (self.x, self.y))
+        window.blit(self.image, (self.x - camera_offset_x, self.y - camera_offset_y)) 
 
-
-    def striker(self, window, bullet):
+    def striker(self, window, bullet, camera_offset_x, camera_offset_y): 
         self.move_image()
-        window.blit(self.image, (self.x, self.y))
-        bullet.move(window)
+        window.blit(self.image, (self.x - camera_offset_x, self.y - camera_offset_y)) 
+        bullet.move(window, camera_offset_x, camera_offset_y) 
+
+
+
+    def move(self, window, camera_offset_x, camera_offset_y):
+        if not self.active: return
+
+        if self.orientation.find('vertical') != -1:
+            self.y += self.step
+            if self.y < 0 or self.y > size_window[1] or self.collidelist(wall_list) != -1:
+                self.active = False
+        elif self.orientation.find('horizontal') != -1:
+            self.x += self.step
+            if self.x < 0 or self.x > size_window[0] or self.collidelist(wall_list) != -1:
+                self.active = False
+
+        if self.image:
+            window.blit(self.image, (self.x - camera_offset_x, self.y - camera_offset_y)) 
+        else:
+            pygame.draw.rect(window, self.color, (self.x - camera_offset_x, self.y - camera_offset_y, self.width, self.height)) # Apply offset
 
 
     def collide_hero(self, hero):
-        if self.colliderect(hero):
-            if hasattr(hero, 'hp'):
-                hero.hp -= 1
-            hero.x = hero.start_x
-            hero.y = hero.start_y
+        pass 
 
 class Bullet(pygame.Rect):
     def __init__(self, x, y, width, height, color, orientation, step, image=None):
@@ -310,62 +297,33 @@ class Bullet(pygame.Rect):
         self.start_y = y
         self.step = step
         self.active = True
-
-    def move(self, window):
-        if not self.active: return 
-
+    
+    def move(self, window, camera_offset_x, camera_offset_y): 
         if self.orientation.find('vertical') != -1:
             self.y += self.step
             if self.y < 0 or self.y > size_window[1] or self.collidelist(wall_list) != -1:
-                self.active = False 
+
+                self.y = self.start_y 
+ 
         elif self.orientation.find('horizontal') != -1:
             self.x += self.step
             if self.x < 0 or self.x > size_window[0] or self.collidelist(wall_list) != -1:
-                self.active = False 
+ 
+                self.x = self.start_x
+        # In Bullet.move method, right before drawing the bullet itself:
+# Existing: pygame.draw.rect(window, self.color, (self.x - camera_offset_x, self.y - camera_offset_y, self.width, self.height))
+# Add this line to draw the bullet's rect outline:
+        pygame.draw.rect(window, (0, 255, 255), (self.x - camera_offset_x, self.y - camera_offset_y, self.width, self.height), 2) # Draw bullet's rect in cyan
+        pygame.draw.rect(window,self.color,(self.x - camera_offset_x,self.y - camera_offset_y, self.width, self.height)) # Apply offset
 
-        if self.image:
-            window.blit(self.image, (self.x, self.y))
-        else:
-            pygame.draw.rect(window, self.color, self)
 
-    def collide_hero(self, hero):
+
+    def collide_hero(self, hero): 
         if self.active and self.colliderect(hero):
             if hasattr(hero, 'hp'): 
                 hero.hp -= 1
             self.active = False
-
-
-
-
-class Bullet(pygame.Rect):
-    def __init__(self,x,y,width,height,color,orientation,step,image = None):
-        super().__init__(x,y,width,height)
-        self.color = color
-        self.image = image
-        self.orientation = orientation
-        self.start_x = x
-        self.start_y = y
-        self.step = step
-
-
-    def move(self, window):
-        if self.orientation.find('vertical') != -1:
-            self.y += self.step
-            if self.y < 0 or self.y > size_window[1] or self.collidelist(wall_list) != -1:
-                self.y = self.start_y
-        elif self.orientation.find('horizontal') != -1:
-            self.x += self.step
-            if self.x < 0 or self.x > size_window[0] or self.collidelist(wall_list) != -1:
-                self.x = self.start_x
-        pygame.draw.rect(window,self.color,self)
-
-
-    def collide_hero(self,hero):
-        if self.colliderect(hero):
-            hero.hp =- 1
-            bullet_image_list.remove(self)
-
-
+      
 
 class Buff(pygame.Rect):
     buff_list = []
@@ -391,17 +349,16 @@ class Buff(pygame.Rect):
         elif self.designed == "move_speed":
             hero.step += 2
             self.time_start = pygame.time.get_ticks()
-        # Add other buff effects here (e.g., speed_bullet, speed_shoot, immortal)
-        # You'll need to define these attributes in your Hero class first
+
 
     def work_time(self, current_time, hero):
         if self.active and current_time - self.time_start > self.working_time:
     
             if self.designed == "move_speed":
                 hero.step -= 2
-            # Add other buff reversals here
-            return True # Indicate that the buff has expired
-        return False # Buff is still active or not started
+          
+            return True 
+        return False 
 
     def collide(self, hero): 
         if self.colliderect(hero) and not self.active:
@@ -435,13 +392,6 @@ class Wall(pygame.Rect):
     def __init__(self, x, y, width, height, image): 
         super().__init__(x, y, width, height)
         self.image = image 
-
-
-        
-
-make_map(temp_map["LVL1"]["map"])
-
-
 
 
         
