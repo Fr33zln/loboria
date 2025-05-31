@@ -11,7 +11,7 @@ class Human(pygame.Rect):
         self.step = step 
         self.grav_power = 2 
         self.static_gravity = -2 
-        self.jump_power = 25
+        self.jump_power = 17.5
         self.can_jump = False
         self.gravity_speed = 0 
         self.hp = hp 
