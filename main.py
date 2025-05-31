@@ -17,25 +17,25 @@ hero = Hero(
     width=size_hero[0],
     height=size_hero[1],
     image_list=hero_image_list,
-    step=5,
+    step=15,
     hp=3
 )
 
 
 
 bot1 = Bot(
-    100,
-    335,
+    1300,
+    365,
     size_bot[0], 
     size_bot[1],
     bot1_image_list,
-    1,
-    "vertical",
-    radius=105,
+    5,
+    "horizontal",
+    radius=165,
 )
 
 bot2 = Bot(
-    745,
+    735,
     365,
     size_bot[0], 
     size_bot[1],
@@ -45,35 +45,77 @@ bot2 = Bot(
     radius=215,
 )
 
-bot4 = Bot(
-    30, 
-    635,
+bot3 = Bot(
+    1700,
+    365,
     size_bot[0], 
     size_bot[1],
-    bot2_image_list,
+    bot1_image_list,
+    -5,
+    "horizontal",
+    radius=165,
+)
+
+
+bot4 = Bot(
+    30, 
+    650,
+    size_bot[0], 
+    size_bot[1],
+    bot3_image_list,
     2,
     "horizontal",
-    radius=150,
+    radius=300,
 )
 bullet4= Bullet(bot4.x+17,
-                 bot4.y,
+                 bot4.y+17,
                  20, 20,
                  WHITE,
                  bot4.orientation,
                  15)
+bot5 = Bot(
+    2365, 
+    365,
+    size_bot[0], 
+    size_bot[1],
+    bot3_image_list,
+    2,
+    "vertical",
+    radius=150,
+)
+bullet5= Bullet(bot5.x+17,
+                 bot5.y,
+                 20, 20,
+                 WHITE,
+                 bot5.orientation,
+                 -15)
+bot6 = Bot(
+    300, 
+    0,
+    size_bot[0], 
+    size_bot[1],
+    bot3_image_list,
+    2,
+    "horizontal",
+    radius=150,
+)
+bullet6= Bullet(bot6.x+17,
+                 bot6.y,
+                 20, 20,
+                 WHITE,
+                 bot6.orientation,
+                 15)
 
 
-
-active_bots = [bot1,bot2, bot4]
+active_bots = [bot1,bot2,bot3,bot4,bot5,bot6]
 
 
 heart_list.append(Heart(390,80,50, 50, heart_image_list))
 
 font = pygame.font.Font(None, 40)
 what_window = "menu"
-rect_end = pygame.Rect(size_window[0]//2-125,600,250,80)
-rect_levels = pygame.Rect(size_window[0]//2-125,150,250,80)
-text_start = font.render("START", True, BLACK)
+rect_end = pygame.Rect(size_window[0]//2-125,300,250,80)
+rect_levels = pygame.Rect(size_window[0]//2-125,200,250,80)
 text_end = font.render("END", True, BLACK)
 text_levels = font.render("LEVELS", True, BLACK)
 
@@ -102,9 +144,9 @@ text_back = font.render("BACK", True, BLACK)
 game = True
 while game:
     events = pygame.event.get()
-
     if what_window == "menu":
         window.fill(BLACK)
+        window.blit(logo_img, (250,-50))
         pygame.draw.rect(window,WHITE,rect_end)
         pygame.draw.rect(window,WHITE,rect_levels)
         window.blit(text_end, (rect_end.centerx - font.size("END")[0] // 2,rect_end.centery - font.size("END")[1]//2))
@@ -151,7 +193,12 @@ while game:
             if stomped_bot in active_bots:
                 active_bots.remove(stomped_bot) 
                 if stomped_bot == bot4: 
-                    bullet4.active = False 
+                    bullet4.active = False
+                if stomped_bot == bot5: 
+                    bullet5.active = False 
+                if stomped_bot == bot6: 
+                    bullet6.active = False 
+  
   
         hero.collide_enemy(active_bots) 
 
@@ -161,12 +208,22 @@ while game:
                 bot.guardian(window, camera_offset_x, camera_offset_y)
             elif bot == bot2: 
                 bot.guardian(window, camera_offset_x, camera_offset_y)
+            elif bot == bot3: 
+                bot.guardian(window, camera_offset_x, camera_offset_y)
             elif bot == bot4:
                 bot.striker(window, bullet4, camera_offset_x, camera_offset_y)
+            elif bot == bot5:
+                bot.striker(window, bullet5, camera_offset_x, camera_offset_y)
+            elif bot == bot6:
+                bot.striker(window, bullet6, camera_offset_x, camera_offset_y)
 
 
         if bullet4.active:
             bullet4.collide_hero(hero)
+        if bullet5.active:
+            bullet5.collide_hero(hero)
+        if bullet6.active:
+            bullet6.collide_hero(hero)
 
 
         for heart in heart_list:
@@ -202,6 +259,5 @@ while game:
             game = False
     clock.tick(FPS)
     pygame.display.flip()
-
 
 
