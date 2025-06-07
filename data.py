@@ -51,7 +51,6 @@ bullet_image_list =pygame.transform.scale(pygame.image.load(os.path.join(abs_pat
 brick_img = pygame.transform.scale(pygame.image.load(os.path.join(abs_path, "Images", "floor.png")), brick_size)
 grass_img = pygame.transform.scale(pygame.image.load(os.path.join(abs_path, "Images", "grass.png")), brick_size)
 dirt_img = pygame.transform.scale(pygame.image.load(os.path.join(abs_path, "Images", "dirt.png")), brick_size)
-#brick_img = pygame.transform.scale(pygame.image.load(os.path.join(abs_path, "Images", "floor.png")), brick_size)
 logo_img =pygame.transform.scale(pygame.image.load(os.path.join(abs_path, "Images", "Loboria.png")), logo_size)
 #.convert() якщо немає прозорості
 #.convert_alpha() якщо є прозорість
