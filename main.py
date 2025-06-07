@@ -199,11 +199,14 @@ while game:
                 if stomped_bot == bot6: 
                     bullet6.active = False 
   
-  
         hero.collide_enemy(active_bots) 
+        if camera_offset_y > 600:
+            hero.hp -= 1
+            hero.x = hero.start_x 
+            hero.y = hero.start_y
 
    
-        for bot in active_bots: #
+        for bot in active_bots: 
             if bot == bot1: 
                 bot.guardian(window, camera_offset_x, camera_offset_y)
             elif bot == bot2: 
@@ -216,6 +219,9 @@ while game:
                 bot.striker(window, bullet5, camera_offset_x, camera_offset_y)
             elif bot == bot6:
                 bot.striker(window, bullet6, camera_offset_x, camera_offset_y)
+
+        if hero.hp == 0:
+            game = False
 
 
         if bullet4.active:
@@ -244,6 +250,11 @@ while game:
                     hero.walk["right"] = True
                 if event.key == pygame.K_a:
                     hero.walk["left"] = True
+                if event.key == pygame.K_y:
+                    hero.hp -= 1
+                    hero.x = hero.start_x
+                    hero.y= hero.start_y
+
 
             if event.type == pygame.KEYUP:
 
@@ -253,11 +264,11 @@ while game:
                     hero.walk["right"] = False
                 if event.key == pygame.K_a:
                     hero.walk["left"] = False
+                
 
     for event in events:
         if event.type == pygame.QUIT:
             game = False
     clock.tick(FPS)
     pygame.display.flip()
-
 
