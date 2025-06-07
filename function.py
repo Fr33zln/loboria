@@ -11,7 +11,7 @@ class Human(pygame.Rect):
         self.step = step 
         self.grav_power = 2 
         self.static_gravity = -2 
-        self.jump_power = 17.5
+        self.jump_power = 30
         self.can_jump = False
         self.gravity_speed = 0 
         self.hp = hp 
@@ -23,7 +23,6 @@ class Human(pygame.Rect):
         self.gravity_speed += 1
         self.y += self.gravity_speed
 
-        # Collision with walls
         for wall in wall_list:
             if self.colliderect(wall):
                 if self.gravity_speed >= 0:
@@ -89,7 +88,8 @@ class Human(pygame.Rect):
                     self.x -= self.step
 
 
-
+    #def immortality(self):
+        
 
 
 
@@ -160,6 +160,7 @@ class Hero(Human):
         self.start_x = self.x
         self.start_y = self.y
         self.gravity_speed = 0
+        self.start_time = 0
 
     def move(self, window, wall_list, camera_offset_x, camera_offset_y, bot_list):
         # Pass both wall_list and bot_list to the grav method
@@ -221,12 +222,14 @@ class Hero(Human):
                     stomped_bot = bot
                     break 
                 else:
+                    if pygame.time.get_ticks()-self.start_time > 0:
+                        self.start_time = pygame.time.get_ticks() + 2000
                
-                    self.x = self.start_x
-                    self.y = self.start_y
-                    if hasattr(self, 'hp'):
-                        self.hp -= 1
-                    return None 
+                        self.x = self.start_x
+                        self.y = self.start_y
+                        if hasattr(self, 'hp'):
+                            self.hp -= 1
+                        return None 
 
         return stomped_bot 
 
@@ -310,60 +313,58 @@ class Bullet(pygame.Rect):
             if self.x < 0 or self.x > size_window[0] or self.collidelist(wall_list) != -1:
  
                 self.x = self.start_x
-        # In Bullet.move method, right before drawing the bullet itself:
-# Existing: pygame.draw.rect(window, self.color, (self.x - camera_offset_x, self.y - camera_offset_y, self.width, self.height))
-# Add this line to draw the bullet's rect outline:
-        pygame.draw.rect(window, (0, 255, 255), (self.x - camera_offset_x, self.y - camera_offset_y, self.width, self.height), 2) # Draw bullet's rect in cyan
-        pygame.draw.rect(window,self.color,(self.x - camera_offset_x,self.y - camera_offset_y, self.width, self.height)) # Apply offset
+        pygame.draw.rect(window, (0, 255, 255), (self.x - camera_offset_x, self.y - camera_offset_y, self.width, self.height), 2) 
+        pygame.draw.rect(window,self.color,(self.x - camera_offset_x,self.y - camera_offset_y, self.width, self.height)) 
 
 
 
     def collide_hero(self, hero): 
-        if self.active and self.colliderect(hero):
+        if self.active and self.colliderect(hero) and pygame.time.get_ticks() - hero.start_time > 0:
+            hero.start_time = pygame.time.get_ticks() + 2000
             if hasattr(hero, 'hp'): 
                 hero.hp -= 1
             self.active = False
       
 
-class Buff(pygame.Rect):
-    buff_list = []
-
-    def __init__(self, x, y, width, height, image, designed, step, working_time):
-        super().__init__(x, y, width, height)
-        self.image = image
-        self.designed = designed
-        self.step = step
-        self.time_start = 0
-        self.working_time = working_time
-        self.active = False
-
-    def move(self, window):
-        if not self.active:
-            self.y += self.step 
-            window.blit(self.image, (self.x, self.y))
-
-    def completing(self, hero, bot_list):
-        if self.designed == "HP":
-            if hasattr(hero, 'hp'):
-                hero.hp += 1
-        elif self.designed == "move_speed":
-            hero.step += 2
-            self.time_start = pygame.time.get_ticks()
-
-
-    def work_time(self, current_time, hero):
-        if self.active and current_time - self.time_start > self.working_time:
-    
-            if self.designed == "move_speed":
-                hero.step -= 2
-          
-            return True 
-        return False 
-
-    def collide(self, hero): 
-        if self.colliderect(hero) and not self.active:
-            self.active = True
-            self.completing(hero, [])
+#class Buff(pygame.Rect):
+#    buff_list = []
+#
+#    def __init__(self, x, y, width, height, image, designed, step, working_time):
+#        super().__init__(x, y, width, height)
+#        self.image = image
+#        self.designed = designed
+#        self.step = step
+#        self.time_start = 0
+#        self.working_time = working_time
+#        self.active = False
+#
+#    def move(self, window):
+#        if not self.active:
+#            self.y += self.step 
+#            window.blit(self.image, (self.x, self.y))
+#
+#    def completing(self, hero, bot_list):
+#        if self.designed == "HP":
+#            if hasattr(hero, 'hp'):
+#                hero.hp += 1
+#        elif self.designed == "move_speed":
+#            hero.step += 2
+#            self.time_start = pygame.time.get_ticks()
+#
+#
+#    def work_time(self, current_time, hero):
+#        if self.active and current_time - self.time_start > self.working_time:
+#    
+#            if self.designed == "move_speed":
+#                hero.step -= 2
+#          
+#            return True 
+#        return False 
+#
+#    def collide(self, hero): 
+#        if self.colliderect(hero) and not self.active:
+#            self.active = True
+#            self.completing(hero, [])
 
 
 
@@ -379,15 +380,9 @@ class Heart(pygame.Rect):
         if self.colliderect(hero):
             if hasattr(hero, 'hp'):
                 hero.hp += 1
-            return True # 
+            return True
         return False
 
-
-
-
-
-
-#ADD IMAGE!!!
 class Wall(pygame.Rect):
     def __init__(self, x, y, width, height, image): 
         super().__init__(x, y, width, height)
@@ -397,3 +392,20 @@ class Wall(pygame.Rect):
         
 
 make_map(temp_map["LVL1"]["map"])
+
+
+#IDEAS
+
+#Class LuckyBlock
+    #Invicibility
+    #+ 1 Hp
+    #Increased_movespeed
+    #Decreased_movespeed
+    #Enemy
+    #Reverse_walk
+
+
+
+
+#Зробить так щоб коли hero доторкався до  bullet то він не починав з початку, а отримував щит на 2 секунди при отриманні урону
+
